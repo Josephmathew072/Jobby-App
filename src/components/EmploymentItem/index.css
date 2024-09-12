@@ -1,0 +1,14 @@
+.employment-label {
+  color: #f8fafc;
+  font-family: Roboto;
+  font-weight: 400;
+  font-size: 18px;
+}
+.employment-item-container {
+  margin-top: 15px;
+}
+.employment-input {
+  outline: none;
+  cursor: pointer;
+  margin-right: 8px;
+}

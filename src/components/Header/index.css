@@ -1,0 +1,82 @@
+.jobby-header-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #272727;
+  padding: 50px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.jobby-logo-image {
+  width: 130px;
+}
+.nav-items-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  list-style-type: none;
+  padding: 0px;
+}
+.link-item {
+  text-decoration: none;
+}
+.nav-list-item {
+  color: #ffffff;
+  font-family: Roboto;
+  font-size: 18px;
+  font-weight: 400;
+  margin-right: 10px;
+}
+.nav-logout-button {
+  background-color: #4f46e5;
+  font-family: Roboto;
+  font-size: 14px;
+  border-radius: 4px;
+  border-style: none;
+  font-weight: 400;
+  color: #ffffff;
+  height: 35px;
+  width: 120px;
+  cursor: pointer;
+  outline: none;
+}
+.sm-items {
+  display: none;
+}
+
+@media screen and (max-width: 767px) {
+  .button-item {
+    background-color: transparent;
+    outline: none;
+    cursor: pointer;
+    border-style: none;
+  }
+  .sm-items {
+    list-style: none;
+    display: flex;
+    padding: 0px;
+    flex-direction: row;
+    align-items: center;
+  }
+  .nav-items-container {
+    display: none;
+  }
+  .nav-logout-button {
+    display: none;
+  }
+  .button-element {
+    font-size: 40px;
+    color: #cbd5e1;
+    margin-right: 8px;
+  }
+  .jobby-header-container {
+    padding: 10px;
+  }
+}
+.header-home-button {
+  background-color: transparent;
+  border-style: none;
+  cursor: pointer;
+  outline: none;
+}

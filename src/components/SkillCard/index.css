@@ -1,0 +1,36 @@
+.skill-card {
+  width: 50px;
+  margin-right: 10px;
+}
+.skill-item-container {
+  display: flex;
+  width: 50%;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.skill-name {
+  color: #f1f5f9;
+  font-family: Roboto;
+  font-weight: 500;
+  font-size: 12px;
+}
+@media screen and (min-width: 768px) {
+  .skill-card {
+    width: 90px;
+    margin-right: 10px;
+  }
+  .skill-item-container {
+    width: 30%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 80px;
+  }
+  .skill-name {
+    color: #f1f5f9;
+    font-family: Roboto;
+    font-weight: 500;
+    font-size: 20px;
+  }
+}

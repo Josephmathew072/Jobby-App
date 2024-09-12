@@ -1,0 +1,25 @@
+@media screen and (min-width: 767px) {
+  .job-filter-section-container {
+    width: 25vw;
+  }
+}
+.employment-heading {
+  color: #ffffff;
+  font-family: Roboto;
+  font-weight: 400;
+  font-size: 24px;
+}
+@media screen and (min-width: 767px) {
+  .employment-heading {
+    font-size: 26px;
+    font-weight: 500;
+  }
+}
+.employment-container {
+  margin-top: 30px;
+}
+.employment-list-container {
+  list-style-type: none;
+  padding: 0px;
+  width: 100%;
+}
