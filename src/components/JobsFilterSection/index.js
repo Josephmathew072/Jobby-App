@@ -14,7 +14,7 @@ class JobsFilterSection extends Component {
           {employmentTypesList.map(eachItem => (
             <EmploymentItem
               eachItem={eachItem}
-              key={eachItem.id}
+              key={eachItem.employmentTypeId} // Changed to use unique employmentTypeId
               gettingTypeOfEmployment={gettingTypeOfEmployment}
             />
           ))}
@@ -24,16 +24,16 @@ class JobsFilterSection extends Component {
     )
   }
 
-  gettingSalaray = () => {
+  gettingSalary = () => {
     const {salaryRangesList, changeSalary} = this.props
     return (
-      <div className="employment-container">
-        <h1 className="employment-heading">Salary Range</h1>
-        <ul className="employment-list-container">
+      <div className="salary-container">
+        <h1 className="salary-heading">Salary Range</h1>
+        <ul className="salary-list-container">
           {salaryRangesList.map(eachItem => (
             <SalaryItem
               eachItem={eachItem}
-              key={eachItem.id}
+              key={eachItem.salaryRangeId} // Changed to use unique salaryRangeId
               changeSalary={changeSalary}
             />
           ))}
@@ -48,7 +48,7 @@ class JobsFilterSection extends Component {
         <UserProfile />
         <hr />
         {this.gettingEmployment()}
-        {this.gettingSalaray()}
+        {this.gettingSalary()}
       </div>
     )
   }

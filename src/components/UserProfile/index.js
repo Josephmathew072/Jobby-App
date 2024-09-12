@@ -4,21 +4,21 @@ import Loader from 'react-loader-spinner'
 import './index.css'
 
 const userStatus = {
-  initail: 'INITIAL',
-  inProgeress: 'IN_PROGRESS',
+  initial: 'INITIAL',
+  inProgress: 'IN_PROGRESS',
   success: 'SUCCESS',
   failure: 'FAILURE',
 }
 
 class UserProfile extends Component {
-  state = {userDetails: [], userStatusIs: userStatus.initail}
+  state = {userDetails: [], userStatusIs: userStatus.initial}
 
   componentDidMount() {
     this.gettingUserDetails()
   }
 
   gettingUserDetails = async () => {
-    this.setState({userStatusIs: userStatus.inProgeress})
+    this.setState({userStatusIs: userStatus.inProgress})
     const jwtToken = Cookies.get('jwt_token')
     const fetchUrl = 'https://apis.ccbp.in/profile'
     const options = {
@@ -27,23 +27,26 @@ class UserProfile extends Component {
       },
       method: 'GET',
     }
-    const response = await fetch(fetchUrl, options)
-    if (response.ok === true) {
-      const data = await response.json()
-      const profileDetails = data.profile_details
-      const updatedProfileDetails = {
-        name: profileDetails.name,
-        profileImageUrl: profileDetails.profile_image_url,
-        shortBio: profileDetails.short_bio,
+
+    try {
+      const response = await fetch(fetchUrl, options)
+      if (response.ok) {
+        const data = await response.json()
+        const profileDetails = data.profile_details
+        const updatedProfileDetails = {
+          name: profileDetails.name,
+          profileImageUrl: profileDetails.profile_image_url,
+          shortBio: profileDetails.short_bio,
+        }
+        this.setState({
+          userDetails: updatedProfileDetails,
+          userStatusIs: userStatus.success,
+        })
+      } else {
+        this.setState({userStatusIs: userStatus.failure})
       }
-      this.setState({
-        userDetails: updatedProfileDetails,
-        userStatusIs: userStatus.success,
-      })
-    } else {
-      this.setState({
-        userStatusIs: userStatus.failure,
-      })
+    } catch (error) {
+      this.setState({userStatusIs: userStatus.failure})
     }
   }
 
@@ -69,12 +72,12 @@ class UserProfile extends Component {
     this.gettingUserDetails()
   }
 
-  displayFailureview = () => (
+  displayFailureView = () => (
     <div className="user-details-container">
       <button
         className="failure-button-user"
         type="button"
-        testid="button"
+        data-testid="button"
         onClick={this.retryProfile}
       >
         Retry
@@ -87,10 +90,10 @@ class UserProfile extends Component {
     switch (userStatusIs) {
       case userStatus.success:
         return this.fetchingUserDetails()
-      case userStatus.inProgeress:
+      case userStatus.inProgress:
         return this.displayLoadingView()
       case userStatus.failure:
-        return this.displayFailureview()
+        return this.displayFailureView()
       default:
         return null
     }

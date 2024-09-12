@@ -1,4 +1,4 @@
-import {Component} from 'react'
+import React, {Component} from 'react'
 import Cookies from 'js-cookie'
 import {BsFillStarFill, BsBriefcaseFill} from 'react-icons/bs'
 import {MdLocationOn} from 'react-icons/md'
@@ -10,8 +10,8 @@ import SimilarJobs from '../SimilarJobs'
 import './index.css'
 
 const jobDetailsStatus = {
-  initail: 'INITIAL',
-  inProgeress: 'IN_PROGRESS',
+  initial: 'INITIAL',
+  inProgress: 'IN_PROGRESS',
   success: 'SUCCESS',
   failure: 'FAILURE',
 }
@@ -20,7 +20,7 @@ class JobDetails extends Component {
   state = {
     jobDetailsList: {},
     similarJobList: [],
-    jobStatus: jobDetailsStatus.initail,
+    jobStatus: jobDetailsStatus.initial,
   }
 
   componentDidMount() {
@@ -47,7 +47,7 @@ class JobDetails extends Component {
     })),
   })
 
-  gettingUpdatedSimlarDetails = data => ({
+  gettingUpdatedSimilarDetails = data => ({
     companyLogoUrl: data.company_logo_url,
     employmentType: data.employment_type,
     jobDescription: data.job_description,
@@ -59,34 +59,44 @@ class JobDetails extends Component {
 
   gettingJobDetails = async () => {
     this.setState({
-      jobStatus: jobDetailsStatus.inProgeress,
+      jobStatus: jobDetailsStatus.inProgress,
     })
-    const jwtToken = Cookies.get('jwt_token')
-    const {match} = this.props
-    const {params} = match
-    const {id} = params
-    const fetchUrl = `https://apis.ccbp.in/jobs/${id}`
-    const options = {
-      headers: {
-        Authorization: `Bearer ${jwtToken}`,
-      },
-      method: 'GET',
-    }
-    const responce = await fetch(fetchUrl, options)
-    if (responce.ok === true) {
-      const data = await responce.json()
-      const jobDetails = data.job_details
-      const similarDetails = data.similar_jobs
-      const updatedJobDetails = this.gettingUpdatedJobDetails(jobDetails)
-      const updatedSimilardetails = similarDetails.map(eachItem =>
-        this.gettingUpdatedSimlarDetails(eachItem),
-      )
-      this.setState({
-        jobDetailsList: updatedJobDetails,
-        similarJobList: updatedSimilardetails,
-        jobStatus: jobDetailsStatus.success,
-      })
-    } else {
+
+    try {
+      const jwtToken = Cookies.get('jwt_token')
+      const {match} = this.props
+      const {params} = match
+      const {id} = params
+      const fetchUrl = `https://apis.ccbp.in/jobs/${id}`
+      const options = {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+        method: 'GET',
+      }
+
+      const response = await fetch(fetchUrl, options)
+
+      if (response.ok) {
+        const data = await response.json()
+        const jobDetails = data.job_details
+        const similarDetails = data.similar_jobs
+        const updatedJobDetails = this.gettingUpdatedJobDetails(jobDetails)
+        const updatedSimilarDetails = similarDetails.map(eachItem =>
+          this.gettingUpdatedSimilarDetails(eachItem),
+        )
+
+        this.setState({
+          jobDetailsList: updatedJobDetails,
+          similarJobList: updatedSimilarDetails,
+          jobStatus: jobDetailsStatus.success,
+        })
+      } else {
+        this.setState({
+          jobStatus: jobDetailsStatus.failure,
+        })
+      }
+    } catch (error) {
       this.setState({
         jobStatus: jobDetailsStatus.failure,
       })
@@ -108,6 +118,7 @@ class JobDetails extends Component {
       skills,
     } = jobDetailsList
     const {description, imageUrl} = lifeAtCompany
+
     return (
       <div>
         <div className="job-description-container">
@@ -136,9 +147,9 @@ class JobDetails extends Component {
                 <p className="icon-description">{employmentType}</p>
               </div>
             </div>
-            <p className="package-description">{packagePerAnnum} </p>
+            <p className="package-description">{packagePerAnnum}</p>
           </div>
-          <hr className="hroizantal-line" />
+          <hr className="horizontal-line" />
           <div className="anchor-container">
             <h1 className="description">Description</h1>
             <a className="anchor-tag" href={companyWebsiteUrl}>
@@ -182,15 +193,15 @@ class JobDetails extends Component {
     this.gettingJobDetails()
   }
 
-  renderFailuerView = () => (
+  renderFailureView = () => (
     <div className="failure-container">
       <img
         src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
         alt="failure view"
         className="failure-view-image"
       />
-      <h1 className="failuer-heading">Oops! Something Went Wrong</h1>
-      <p className="failuer-discrip">
+      <h1 className="failure-heading">Oops! Something Went Wrong</h1>
+      <p className="failure-description">
         We cannot seem to find the page you are looking for.
       </p>
       <button
@@ -206,12 +217,12 @@ class JobDetails extends Component {
   renderJobDetails = () => {
     const {jobStatus} = this.state
     switch (jobStatus) {
-      case jobDetailsStatus.inProgeress:
+      case jobDetailsStatus.inProgress:
         return this.renderLoadingView()
       case jobDetailsStatus.success:
         return this.gettingJobDescription()
       case jobDetailsStatus.failure:
-        return this.renderFailuerView()
+        return this.renderFailureView()
       default:
         return null
     }
@@ -226,4 +237,5 @@ class JobDetails extends Component {
     )
   }
 }
+
 export default JobDetails
