@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import {useState, useEffect, useCallback} from 'react'
 import Cookies from 'js-cookie'
 import {BsFillStarFill, BsBriefcaseFill} from 'react-icons/bs'
 import {MdLocationOn} from 'react-icons/md'
@@ -16,18 +16,12 @@ const jobDetailsStatus = {
   failure: 'FAILURE',
 }
 
-class JobDetails extends Component {
-  state = {
-    jobDetailsList: {},
-    similarJobList: [],
-    jobStatus: jobDetailsStatus.initial,
-  }
+const JobDetails = props => {
+  const [jobDetailsList, setJobDetailsList] = useState({})
+  const [similarJobList, setSimilarJobList] = useState([])
+  const [jobStatus, setJobStatus] = useState(jobDetailsStatus.initial)
 
-  componentDidMount() {
-    this.gettingJobDetails()
-  }
-
-  gettingUpdatedJobDetails = jobDetails => ({
+  const gettingUpdatedJobDetails = jobDetails => ({
     companyLogoUrl: jobDetails.company_logo_url,
     companyWebsiteUrl: jobDetails.company_website_url,
     employmentType: jobDetails.employment_type,
@@ -47,7 +41,7 @@ class JobDetails extends Component {
     })),
   })
 
-  gettingUpdatedSimilarDetails = data => ({
+  const gettingUpdatedSimilarDetails = data => ({
     companyLogoUrl: data.company_logo_url,
     employmentType: data.employment_type,
     jobDescription: data.job_description,
@@ -57,14 +51,12 @@ class JobDetails extends Component {
     title: data.title,
   })
 
-  gettingJobDetails = async () => {
-    this.setState({
-      jobStatus: jobDetailsStatus.inProgress,
-    })
+  const gettingJobDetails = useCallback(async () => {
+    setJobStatus(jobDetailsStatus.inProgress)
 
     try {
       const jwtToken = Cookies.get('jwt_token')
-      const {match} = this.props
+      const {match} = props
       const {params} = match
       const {id} = params
       const fetchUrl = `https://apis.ccbp.in/jobs/${id}`
@@ -81,30 +73,27 @@ class JobDetails extends Component {
         const data = await response.json()
         const jobDetails = data.job_details
         const similarDetails = data.similar_jobs
-        const updatedJobDetails = this.gettingUpdatedJobDetails(jobDetails)
+        const updatedJobDetails = gettingUpdatedJobDetails(jobDetails)
         const updatedSimilarDetails = similarDetails.map(eachItem =>
-          this.gettingUpdatedSimilarDetails(eachItem),
+          gettingUpdatedSimilarDetails(eachItem),
         )
 
-        this.setState({
-          jobDetailsList: updatedJobDetails,
-          similarJobList: updatedSimilarDetails,
-          jobStatus: jobDetailsStatus.success,
-        })
+        setJobDetailsList(updatedJobDetails)
+        setSimilarJobList(updatedSimilarDetails)
+        setJobStatus(jobDetailsStatus.success)
       } else {
-        this.setState({
-          jobStatus: jobDetailsStatus.failure,
-        })
+        setJobStatus(jobDetailsStatus.failure)
       }
     } catch (error) {
-      this.setState({
-        jobStatus: jobDetailsStatus.failure,
-      })
+      setJobStatus(jobDetailsStatus.failure)
     }
-  }
+  }, [props])
 
-  gettingJobDescription = () => {
-    const {jobDetailsList, similarJobList} = this.state
+  useEffect(() => {
+    gettingJobDetails()
+  }, [gettingJobDetails])
+
+  const gettingJobDescription = () => {
     const {
       companyLogoUrl,
       companyWebsiteUrl,
@@ -183,17 +172,17 @@ class JobDetails extends Component {
     )
   }
 
-  renderLoadingView = () => (
+  const renderLoadingView = () => (
     <div className="profile-loader-container" data-testid="loader">
       <Loader type="ThreeDots" color="#ffffff" height="50" width="50" />
     </div>
   )
 
-  retryButton = () => {
-    this.gettingJobDetails()
+  const retryButton = () => {
+    gettingJobDetails()
   }
 
-  renderFailureView = () => (
+  const renderFailureView = () => (
     <div className="failure-container">
       <img
         src="https://assets.ccbp.in/frontend/react-js/failure-img.png"
@@ -204,38 +193,31 @@ class JobDetails extends Component {
       <p className="failure-description">
         We cannot seem to find the page you are looking for.
       </p>
-      <button
-        type="button"
-        className="failure-button"
-        onClick={this.retryButton}
-      >
+      <button type="button" className="failure-button" onClick={retryButton}>
         Retry
       </button>
     </div>
   )
 
-  renderJobDetails = () => {
-    const {jobStatus} = this.state
+  const renderJobDetails = () => {
     switch (jobStatus) {
       case jobDetailsStatus.inProgress:
-        return this.renderLoadingView()
+        return renderLoadingView()
       case jobDetailsStatus.success:
-        return this.gettingJobDescription()
+        return gettingJobDescription()
       case jobDetailsStatus.failure:
-        return this.renderFailureView()
+        return renderFailureView()
       default:
         return null
     }
   }
 
-  render() {
-    return (
-      <div>
-        <Header />
-        <div className="job-detail-container">{this.renderJobDetails()}</div>
-      </div>
-    )
-  }
+  return (
+    <div>
+      <Header />
+      <div className="job-detail-container">{renderJobDetails()}</div>
+    </div>
+  )
 }
 
 export default JobDetails
